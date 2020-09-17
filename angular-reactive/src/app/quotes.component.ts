@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { map } from 'rxjs/operators';
 
 import { Quote } from './quote';
 import { QuoteReactiveService } from './quote-reactive.service';
@@ -46,7 +47,8 @@ export class QuotesComponent {
     this.selectedQuote = quote;
   }
 
-  deleteQuote(): void {
-
+  deleteQuote(selectedQuote: Quote): void {
+    this.quoteReactiveService.deleteQuote(selectedQuote.id.toString()).subscribe();
+    this.requestQuoteStream();
   }
 }

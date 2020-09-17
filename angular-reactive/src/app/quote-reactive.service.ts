@@ -4,9 +4,13 @@ import { Quote } from './quote';
 
 import * as EventSource from 'eventsource';
 import {Observable} from 'rxjs/Observable';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable()
 export class QuoteReactiveService {
+
+  constructor(private http: HttpClient){
+  }
 
   quotes: Quote[] = [];
   url: string = 'http://localhost:8080/quotes-reactive';
@@ -39,6 +43,10 @@ export class QuoteReactiveService {
         }
       }
     });
+  }
+
+  deleteQuote(id: String): Observable<any>{
+    return this.http.delete(`${this.url}/${id}`, {responseType: 'text'});
   }
 
 }

@@ -6,17 +6,19 @@ import com.thepracticaldeveloper.reactiveweb.repository.QuoteMongoReactiveReposi
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
-
-import java.time.Duration;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -37,6 +39,9 @@ public class QuoteReactiveControllerIntegrationTest {
 
     private WebClient webClient;
 
+    @Autowired
+    private WebTestClient webTestClient;
+
     private Flux<Quote> quoteFlux;
 
     @Before
@@ -47,6 +52,15 @@ public class QuoteReactiveControllerIntegrationTest {
                 new Quote("2", "mock-book", "Quote 2"),
                 new Quote("3", "mock-book", "Quote 3"),
                 new Quote("4", "mock-book", "Quote 4"));
+    }
+
+    @Test
+    public void simpleDeleteRequest() {
+        Mono<Void> voidMono = Mono.empty();
+        Mockito.when(quoteMongoReactiveRepository.deleteById("1"))
+                .thenReturn(voidMono);
+        webTestClient.delete().uri("/quotes-reactive/{id}", 1)
+                .exchange().expectStatus().isOk();
     }
 
     @Test
